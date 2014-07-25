@@ -52,7 +52,7 @@ Command names should be snake_cased at all times, both when serialized to be sen
 
 e.g.
 
-    [“publishEvent”, “sendNotification”] => [“publish_event”, “send_notification”]
+    [“publish_event”, “send_notification”]
 
 ## Authorization
 
@@ -63,7 +63,7 @@ For example, with a username of ‘user’ and a password of ‘pass’, the hea
 
 When executing commands, the API should return a response containing the result.
 
-    // POST /api/commands/mcp_command
+    // POST /api/robots/TestBot/commands/hello
     // { greeting: ‘world’ }
     {
       "result": "Hello, world"
@@ -89,7 +89,7 @@ Params order should be determined by their order in the request.
 
 So, if the values are coerced to an array, this request would yield the subsequent params array:
 
-    // POST https://localhost:3000/api/commands/hello
+    // POST https://localhost:3000/api/commands/echo
     // { “a”: “alpha”, “b”: false }
 
     // after coercion:
@@ -119,29 +119,36 @@ Example response:
         "robots": [
           {
             "name": "TestBot",
+
             "connections": [
-              { "name": "leapmotion", "port": "127.0.0.1:6437", "adaptor": "LeapMotion" },
-              { "name": "arduino", "port": "/dev/tty.usbmodem1421", "adaptor": "Firmata" }
-            ],
-            "devices": [
               {
-                "name": "leapmotion",
-                "driver": "LeapMotion",
-                "connection": "leapmotion"
-                "commands": []
-              },
-              {
-                "name": "led",
-                "driver": "Led",
-                "pin": 13,
-                "connection": "arduino",
-                "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+                "name": "loopback",
+                "adaptor": "Loopback",
+                "details": {
+                  "port": "/dev/null",
+                  "test": "abc"
+                }
               }
             ],
+
+            "devices": [
+              {
+                "name": "ping",
+                "driver": "Ping",
+                "connection": "loopback",
+                "commands": ["ping"],
+                "details": {
+                  "pin": "13",
+                  "test": "abc"
+                }
+              }
+            ],
+
             "commands": [ "hello" ]
           }
         ],
-        "commands": [ "mcp_command" ]
+
+        "commands": [ "echo" ]
       }
     }
 
@@ -153,7 +160,7 @@ Example response:
 
     // GET /api/commands
     {
-      "commands": [ "mcp_command" ]
+      "commands": [ "echo" ]
     }
 
 ### POST /api/commands/:command
@@ -165,9 +172,10 @@ Returns the result of running the command.
 
 Example response:
 
-    // POST /api/commands/mcp_command?greeting=world
+    // POST /api/commands/echo
+    // { "e": 10 }
     {
-      “result”: “Hello, world”
+      "result": 10
     }
 
 ### GET /api/robots
@@ -187,25 +195,31 @@ Example response:
       "robots": [
         {
           "name": "TestBot",
+
           "connections": [
-            { "name": "leapmotion", "port": "127.0.0.1:6437", "adaptor": "LeapMotion" },
-            { "name": "arduino", "port": "/dev/tty.usbmodem1421", "adaptor": "Firmata" }
-          ],
-          "devices": [
             {
-              "name": "leapmotion",
-              "driver": "LeapMotion",
-              "connection": "leapmotion"
-              "commands": []
-            },
-            {
-              "name": "led",
-              "driver": "Led",
-              "pin": 13,
-              "connection": "arduino",
-              "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+              "name": "loopback",
+              "adaptor": "Loopback",
+              "details": {
+                "port": "/dev/null",
+                "test": "abc"
+              }
             }
           ],
+
+          "devices": [
+            {
+              "name": "ping",
+              "driver": "Ping",
+              "connection": "loopback",
+              "commands": ["ping"],
+              "details": {
+                "pin": "13",
+                "test": "abc"
+              }
+            }
+          ],
+
           "commands": [ "hello" ]
         }
       ]
@@ -226,25 +240,31 @@ Example response:
     {
       "robot": {
         "name": "TestBot",
+
         "connections": [
-          { "name": "leapmotion", "port": "127.0.0.1:6437", "adaptor": "LeapMotion" },
-          { "name": "arduino", "port": "/dev/tty.usbmodem1421", "adaptor": "Firmata" }
-        ],
-        "devices": [
           {
-            "name": "leapmotion",
-            "driver": "LeapMotion",
-            "connection": "leapmotion"
-            "commands": []
-          },
-          {
-            "name": "led",
-            "driver": "Led",
-            "pin": 13,
-            "connection": "arduino",
-            "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+            "name": "loopback",
+            "adaptor": "Loopback",
+            "details": {
+              "port": "/dev/null",
+              "test": "abc"
+            }
           }
         ],
+
+        "devices": [
+          {
+            "name": "ping",
+            "driver": "Ping",
+            "connection": "loopback",
+            "commands": ["ping"],
+            "details": {
+              "pin": "13",
+              "test": "abc"
+            }
+          }
+        ],
+
         "commands": [ "hello" ]
       }
     }
@@ -284,17 +304,14 @@ Example response:
     {
       "devices": [
         {
-          "name": "leapmotion",
-          "driver": "LeapMotion",
-          "connection": "leapmotion"
-          "commands": []
-        },
-        {
-          "name": "led",
-          "driver": "Led",
-          "pin": 13,
-          "connection": "arduino",
-          "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+          "name": "ping",
+          "driver": "Ping",
+          "connection": "loopback",
+          "commands": ["ping"],
+          "details": {
+            "pin": "13",
+            "test": "abc"
+          }
         }
       ]
     }
@@ -305,14 +322,17 @@ Returns an object containing information about the specified Device on the Robot
 
 Example response:
 
-    // GET /api/robots/TestBot/devices/led
+    // GET /api/robots/TestBot/devices/ping
     {
       "device": {
-        "name": "led",
-        "driver": "Led",
-        "pin": 13,
-        "connection": "arduino",
-        "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+        "name": "ping",
+        "driver": "Ping",
+        "connection": "loopback",
+        "commands": [ "ping" ],
+        "details": {
+          "pin": "13",
+          "test": "abc"
+        }
       }
     }
 
@@ -323,10 +343,10 @@ When the device emits the event, the data emitted with the event is sent down th
 
 Example response:
 
-    // GET /api/robots/TestBot/devices/leapmotion/events/gesture
-    data: { [... LeapMotion Gesture data …] }
+    // GET /api/robots/TestBot/devices/ping/events/ping
+    data: ping
 
-    data: { [...] }
+    data: ping
 
 ### GET /api/robots/:robot/devices/:device/commands
 
@@ -334,9 +354,9 @@ Returns an array of commands the specified Device has.
 
 Example response:
 
-    // GET /api/robots/TestBot/devices/led/commands
+    // GET /api/robots/TestBot/devices/ping/commands
     {
-      "commands": [ "is_on", "turn_on", "turn_off", "toggle", "brightness" ]
+      "commands": [ "ping" ]
     }
 
 ### POST /api/robots/:robot/devices/:devices/commands/:command
@@ -348,9 +368,9 @@ Returns the result of running the command.
 
 Example response:
 
-    // POST /api/robots/TestBot/devices/led/commands/turn_on
+    // POST /api/robots/TestBot/devices/ping/commands/ping
     {
-      “result”: null
+      “result”: "pong"
     }
 
 ### GET /api/robots/:robot/connections
@@ -363,15 +383,12 @@ Example response:
     {
       "connections": [
         {
-          "name": "leapmotion",
-          "port": "127.0.0.1:6437",
-          "adaptor": "LeapMotion"
-        },
-
-        {
-          "name": "arduino",
-          "port": "/dev/tty.usbmodem1421",
-          "adaptor": "Firmata"
+          "name": "loopback",
+          "adaptor": "Loopback",
+          "details": {
+            "port": "/dev/null",
+            "test": "abc"
+          }
         }
       ]
     }
@@ -382,11 +399,14 @@ Returns an object containing information about the specified Connection on the R
 
 Example response:
 
-    // GET /api/robots/TestBot/connections/arduino
+    // GET /api/robots/TestBot/connections/loopback
     {
       "connection": {
-        "name": "arduino",
-        "port": "/dev/tty.usbmodem1421",
-        "adaptor": "Firmata"
+        "name": "loopback",
+        "adaptor": "Loopback",
+        "details": {
+          "port": "/dev/null",
+          "test": "abc"
+        }
       }
-    } 
+    }
