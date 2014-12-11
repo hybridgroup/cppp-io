@@ -398,6 +398,17 @@ Example response:
       "commands": [ "ping" ]
     }
 
+### GET /api/robots/:robot/devices/:device/events
+
+Returns an array with the specified Device’s events in string format.
+
+Example response:
+
+    // GET /api/robots/TestBot/devices/ping/events
+    {
+      "events": [ "ping" ]
+    }
+
 ### POST /api/robots/:robot/devices/:devices/commands/:command
 
 Executes the requested command on the device.
@@ -410,17 +421,6 @@ Example response:
     // POST /api/robots/TestBot/devices/ping/commands/ping
     {
       “result”: "pong"
-    }
-
-### GET /api/robots/:robot/devices/:device/events
-
-Returns an array with the specified Device’s events in string format.
-
-Example response:
-
-    // GET /api/robots/TestBot/devices/ping/events
-    {
-      "events": [ "ping" ]
     }
 
 ### GET /api/robots/:robot/devices/:device/events/:event
