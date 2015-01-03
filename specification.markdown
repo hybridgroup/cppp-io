@@ -48,7 +48,7 @@ If a requested type is not possible to serve, the API should respond with a 406 
 
 ## Command Casing
 
-Command names should be snake_cased at all times, both when serialized to be sent down to the client, or when received in a URL.
+Command and event names should be snake_cased at all times, both when serialized to be sent down to the client, or when received in a URL.
 
 e.g.
 
@@ -109,7 +109,7 @@ Routes will be described below, in a format similar to the following:
 Returns an object containing info on the MCP. The MCP response should contain:
 
 - an array of the robots
-- an array of commands the MCP supports (represented as strings)
+- an array of commands and events the MCP supports (represented as strings)
 
 Example response:
 
@@ -137,6 +137,7 @@ Example response:
                 "driver": "Ping",
                 "connection": "loopback",
                 "commands": ["ping"],
+                "events": ["ping"],
                 "details": {
                   "pin": "13",
                   "test": "abc"
@@ -144,11 +145,13 @@ Example response:
               }
             ],
 
-            "commands": [ "hello" ]
+            "commands": [ "hello" ],
+            "events": ["test_passed", "test_failed"]
           }
         ],
 
-        "commands": [ "echo" ]
+        "commands": [ "echo" ],
+        "events": [ "robot_added", "robot_removed" ]
       }
     }
 
@@ -161,6 +164,17 @@ Example response:
     // GET /api/commands
     {
       "commands": [ "echo" ]
+    }
+
+### GET /api/events
+
+Returns an array with the specified MCP’s events in string format.
+
+Example response:
+
+    // GET /api/events
+    {
+      "events": [ "robot_added", "robot_removed" ]
     }
 
 ### POST /api/commands/:command
@@ -176,6 +190,18 @@ Example response:
     // { "e": 10 }
     {
       "result": 10
+    }
+
+### GET /api/events/:event
+
+Opens a Server-Sent Events stream that hooks into the provided Event on the MCP.
+When the MCP emits the event, the data emitted with the event is sent down the wire to the client.
+
+Example response:
+
+    // GET /api/events/robot_removed
+    data: {
+      "name": "TempBot"
     }
 
 ### GET /api/robots
@@ -213,6 +239,7 @@ Example response:
               "driver": "Ping",
               "connection": "loopback",
               "commands": ["ping"],
+              "events": ["ping"],
               "details": {
                 "pin": "13",
                 "test": "abc"
@@ -220,7 +247,8 @@ Example response:
             }
           ],
 
-          "commands": [ "hello" ]
+          "commands": [ "hello" ],
+          "events": ["test_passed", "test_failed"]
         }
       ]
     }
@@ -238,35 +266,35 @@ Example response:
 
     // GET /api/robots/TestBot
     {
-      "robot": {
-        "name": "TestBot",
+      "name": "TestBot",
 
-        "connections": [
-          {
-            "name": "loopback",
-            "adaptor": "Loopback",
-            "details": {
-              "port": "/dev/null",
-              "test": "abc"
-            }
+      "connections": [
+        {
+          "name": "loopback",
+          "adaptor": "Loopback",
+          "details": {
+            "port": "/dev/null",
+            "test": "abc"
           }
-        ],
+        }
+      ],
 
-        "devices": [
-          {
-            "name": "ping",
-            "driver": "Ping",
-            "connection": "loopback",
-            "commands": ["ping"],
-            "details": {
-              "pin": "13",
-              "test": "abc"
-            }
+      "devices": [
+        {
+          "name": "ping",
+          "driver": "Ping",
+          "connection": "loopback",
+          "commands": ["ping"],
+          "events": ["ping"],
+          "details": {
+            "pin": "13",
+            "test": "abc"
           }
-        ],
+        }
+      ],
 
-        "commands": [ "hello" ]
-      }
+      "commands": [ "hello" ],
+      "events": ["test_passed", "test_failed"]
     }
 
 ### GET /api/robots/:robot/commands
@@ -278,6 +306,17 @@ Example response:
     // GET /api/robots/TestBot/commands
     {
       "commands": [ "hello" ]
+    }
+
+### GET /api/robots/:robot/events
+
+Returns an array with the specified Robot’s events in string format.
+
+Example response:
+
+    // GET /api/robots/TestBot/events
+    {
+      "events": [ "test_passed", "test_failed" ]
     }
 
 ### POST /api/robots/:robot/commands/:command
@@ -294,6 +333,16 @@ Example response:
       “result”: “Hello, world”
     }
 
+### GET /api/robots/:robot/events/:event
+
+Opens a Server-Sent Events stream that hooks into the provided Event on the robot.
+When the MCP emits the event, the data emitted with the event is sent down the wire to the client.
+
+Example response:
+
+    // GET /api/robots/TestBot/events/test_passed
+    data: 8 tests complete (4ms)
+
 ### GET /api/robots/:robot/devices
 
 Returns an array containing information about the specified Robot’s Devices.
@@ -308,6 +357,7 @@ Example response:
           "driver": "Ping",
           "connection": "loopback",
           "commands": ["ping"],
+          "events": ["ping"],
           "details": {
             "pin": "13",
             "test": "abc"
@@ -329,24 +379,13 @@ Example response:
         "driver": "Ping",
         "connection": "loopback",
         "commands": [ "ping" ],
+        "events": ["ping"],
         "details": {
           "pin": "13",
           "test": "abc"
         }
       }
     }
-
-### GET /api/robots/:robot/devices/:device/events/:event
-
-Opens a Server-Sent Events stream that hooks into the provided Event on the specified device.
-When the device emits the event, the data emitted with the event is sent down the wire to the client.
-
-Example response:
-
-    // GET /api/robots/TestBot/devices/ping/events/ping
-    data: ping
-
-    data: ping
 
 ### GET /api/robots/:robot/devices/:device/commands
 
@@ -357,6 +396,17 @@ Example response:
     // GET /api/robots/TestBot/devices/ping/commands
     {
       "commands": [ "ping" ]
+    }
+
+### GET /api/robots/:robot/devices/:device/events
+
+Returns an array with the specified Device’s events in string format.
+
+Example response:
+
+    // GET /api/robots/TestBot/devices/ping/events
+    {
+      "events": [ "ping" ]
     }
 
 ### POST /api/robots/:robot/devices/:devices/commands/:command
@@ -372,6 +422,18 @@ Example response:
     {
       “result”: "pong"
     }
+
+### GET /api/robots/:robot/devices/:device/events/:event
+
+Opens a Server-Sent Events stream that hooks into the provided Event on the specified device.
+When the device emits the event, the data emitted with the event is sent down the wire to the client.
+
+Example response:
+
+    // GET /api/robots/TestBot/devices/ping/events/ping
+    data: ping
+
+    data: ping
 
 ### GET /api/robots/:robot/connections
 
