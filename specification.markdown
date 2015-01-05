@@ -146,7 +146,7 @@ Example response:
             ],
 
             "commands": [ "hello" ],
-            "events": ["test_passed", "test_failed"]
+            "events": [ "hello" ]
           }
         ],
 
@@ -248,7 +248,7 @@ Example response:
           ],
 
           "commands": [ "hello" ],
-          "events": ["test_passed", "test_failed"]
+          "events": [ "hello" ]
         }
       ]
     }
@@ -294,7 +294,7 @@ Example response:
       ],
 
       "commands": [ "hello" ],
-      "events": ["test_passed", "test_failed"]
+      "events": [ "hello" ]
     }
 
 ### GET /api/robots/:robot/commands
@@ -316,7 +316,7 @@ Example response:
 
     // GET /api/robots/TestBot/events
     {
-      "events": [ "test_passed", "test_failed" ]
+      "events": [ "hello" ]
     }
 
 ### POST /api/robots/:robot/commands/:command
@@ -340,8 +340,8 @@ When the MCP emits the event, the data emitted with the event is sent down the w
 
 Example response:
 
-    // GET /api/robots/TestBot/events/test_passed
-    data: 8 tests complete (4ms)
+    // GET /api/robots/TestBot/events/hello
+    data: hi there
 
 ### GET /api/robots/:robot/devices
 
