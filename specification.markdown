@@ -409,7 +409,7 @@ Example response:
       "events": [ "ping" ]
     }
 
-### POST /api/robots/:robot/devices/:devices/commands/:command
+### POST /api/robots/:robot/devices/:device/commands/:command
 
 Executes the requested command on the device.
 Params will be provided to the method in the order they’re passed (either in body or query params).
