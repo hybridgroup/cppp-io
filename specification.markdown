@@ -28,6 +28,11 @@ And when fetching an individual robot, an example response might look like this:
 All API routes will be namespaced under the `/api` route prefix.
 This is to make them distinct from other media types which may be served by the same router.
 
+## Routing
+
+Routing is the mechanism that allows an API client system to find the path to a Robot or any
+Device belonging to a Robot. We use the same style of routing paths in Cylon.js regardless if you are using REST, Socket.io, or MQTT. 
+
 ## Versioning
 
 With no **Accept** header supplied, the API will default to the latest version, and JSON responses.
