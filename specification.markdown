@@ -57,7 +57,7 @@ Command and event names should be snake_cased at all times, both when serialized
 
 e.g.
 
-    [“publish_event”, “send_notification”]
+    ["publish_event", "send_notification"]
 
 ## Authorization
 
@@ -95,10 +95,10 @@ Params order should be determined by their order in the request.
 So, if the values are coerced to an array, this request would yield the subsequent params array:
 
     // POST https://localhost:3000/api/commands/echo
-    // { “a”: “alpha”, “b”: false }
+    // { "a": "alpha", "b": false }
 
     // after coercion:
-    [ “alpha”, false ]
+    [ "alpha", false ]
 
 ## Routes
 
